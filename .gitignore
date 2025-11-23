@@ -1,0 +1,7 @@
+target
+.idea
+.bsp
+*.iml
+/bin/
+development.conf
+application.conf*

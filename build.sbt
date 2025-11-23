@@ -1,0 +1,24 @@
+ThisBuild / version := "0.1.0-SNAPSHOT"
+
+ThisBuild / scalaVersion := "2.12.18"
+
+val sparkVersion = "3.5.4"
+val slf4jVersion = "2.0.16"
+val logBackVersion = "1.0.12"
+val mongoVersion = "5.5.1"
+val redisVersion = "4.3.2"
+
+lazy val root = (project in file("."))
+  .settings(
+    name := "DATA-Synchronizing-Scala",
+
+    libraryDependencies ++= Seq(
+      "org.apache.spark" %% "spark-core" % sparkVersion,
+      "org.apache.spark" %% "spark-sql" % sparkVersion,
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
+      "ch.qos.logback" % "logback-classic" % logBackVersion,
+      "org.mongodb" % "mongodb-driver-sync" % mongoVersion,
+      "redis.clients" % "jedis" % redisVersion,
+      "com.typesafe" % "config" % "1.4.3"
+    )
+  )
