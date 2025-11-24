@@ -22,6 +22,7 @@ lazy val root = (project in file("."))
       "com.typesafe" % "config" % "1.4.3",
       "com.typesafe.slick" %% "slick" % "3.4.1",
       "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1",
-      "mysql" % "mysql-connector-java" % "8.0.33"
+      "mysql" % "mysql-connector-java" % "8.0.33",
+      "org.mongodb.scala" %% "mongo-scala-driver" % "5.2.0"
     )
   )
