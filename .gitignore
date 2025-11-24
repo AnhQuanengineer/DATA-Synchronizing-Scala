@@ -5,3 +5,4 @@ target
 /bin/
 development.conf
 application.conf*
+tutorial_docker.txt
