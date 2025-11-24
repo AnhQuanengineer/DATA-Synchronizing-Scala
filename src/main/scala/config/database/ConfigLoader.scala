@@ -1,6 +1,5 @@
 package config.database
 import com.typesafe.config.{Config, ConfigFactory}
-import config.database.ConfigLoader.config
 
 object ConfigLoader {
   val config: Config = ConfigFactory.load()
@@ -24,7 +23,7 @@ object ConfigLoader {
       , user = config.getString("Mysql.user")
       , password = config.getString("Mysql.password")
       , database = config.getString("Mysql.database")
-      , jdbc = config.getString("Mysql.jdbc")
+      , url = config.getString("Mysql.url")
       , driver = config.getString("Mysql.driver")
     )
 
@@ -59,7 +58,7 @@ object ConfigLoader {
 
   def main(args: Array[String]): Unit = {
     val dbConf = getDatabaseConfig
-    println(dbConf.mongo.uri)
+    println(dbConf.mysql.driver)
 //    val config = ConfigFactory.load()
 //    println(config.getString("Mysql.host"))
   }

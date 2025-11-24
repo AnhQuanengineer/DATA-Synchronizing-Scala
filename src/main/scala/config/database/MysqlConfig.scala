@@ -6,9 +6,14 @@ case class MysqlConfig(
                       user: String,
                       password: String,
                       database: String,
-                      jdbc: String,
+                      url: String,
                       driver: String
                       ) extends ValidateConfig {
+
+  def jdbcUrl: String = {
+    s"jdbc:mysql://$host:$port/$database"
+  }
+
   override def validate(): Unit = {
     val requiredFields: List[String] = List(
       if (host == null || host.isEmpty) Some("host") else None,
@@ -16,7 +21,7 @@ case class MysqlConfig(
       if (password == null || password.isEmpty) Some("password") else None,
       if (database == null || database.isEmpty) Some("database") else None,
       if (port == null) Some("port") else None,
-      if (jdbc == null || jdbc.isEmpty) Some("jdbc") else None,
+      if (url == null || url.isEmpty) Some("url") else None,
       if (driver == null || driver.isEmpty) Some("driver") else None,
     ).flatten
 

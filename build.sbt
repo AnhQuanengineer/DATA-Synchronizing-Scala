@@ -19,6 +19,9 @@ lazy val root = (project in file("."))
       "ch.qos.logback" % "logback-classic" % logBackVersion,
       "org.mongodb" % "mongodb-driver-sync" % mongoVersion,
       "redis.clients" % "jedis" % redisVersion,
-      "com.typesafe" % "config" % "1.4.3"
+      "com.typesafe" % "config" % "1.4.3",
+      "com.typesafe.slick" %% "slick" % "3.4.1",
+      "com.typesafe.slick" %% "slick-hikaricp" % "3.4.1",
+      "mysql" % "mysql-connector-java" % "8.0.33"
     )
   )
