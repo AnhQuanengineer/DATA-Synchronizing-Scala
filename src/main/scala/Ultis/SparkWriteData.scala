@@ -1,0 +1,5 @@
+package Ultis
+
+class SparkWriteData {
+
+}
