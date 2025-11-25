@@ -7,3 +7,4 @@ development.conf
 application.conf*
 tutorial_docker.txt
 src/main/resources/lib
+2015-03-01-17.json
