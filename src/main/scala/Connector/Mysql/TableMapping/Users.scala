@@ -5,7 +5,7 @@ import slick.lifted.ProvenShape
 
 
 class Users (tag: Tag) extends Table[User](tag, "users"){
-  def user_id: Rep[Long] = column[Long]("id")
+  def user_id: Rep[Long] = column[Long]("user_id")
 //  Nó cho Slick biết rằng có một cột trong bảng CSDL có tên là "name" và chứa dữ liệu kiểu String
   def login: Rep[String] = column[String]("login")
   def gravatar_id: Rep[String] = column[String]("gravatar_id")

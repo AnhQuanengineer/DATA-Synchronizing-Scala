@@ -53,4 +53,44 @@ class UserService(userRepository: UserRepository) {
       }
     }
   }
+
+  def alterTableAddColumn(tableName: String, columnName: String, columnType: String): Unit = {
+    try {
+      // 1. Thực thi DBIO Action bằng hàm exec
+      val rowsAffected: Int = exec(userRepository.addColumn(tableName, columnName, columnType))
+
+      // 2. In kết quả thành công (tương đương với print)
+      println(s"----------Add column $columnName to $tableName in MySQL successfully. Rows affected: $rowsAffected-----------------")
+
+    } catch {
+      case e: Throwable =>
+        // 3. Xử lý lỗi (tương đương với raise Exception)
+        // Lưu ý: Hàm exec() của bạn có thể đã bao gồm logic connect/close/commit/rollback
+        // Nếu không, cần đảm bảo DBIO Action được thực thi trong một transaction.
+        throw new RuntimeException(s"--------Fail to ALTER TABLE $tableName in Mysql: ${e.getMessage}-----------", e)
+    } finally {
+      // Đóng kết nối nếu hàm exec không tự làm
+      close()
+    }
+  }
+
+  def alterTableDropColumn(tableName: String, columnName: String): Unit = {
+    try {
+      // 1. Thực thi DBIO Action bằng hàm exec
+      val rowsAffected: Int = exec(userRepository.dropColumn(tableName, columnName))
+
+      // 2. In kết quả thành công (tương đương với print)
+      println(s"----------Drop column $columnName to $tableName in MySQL successfully. Rows affected: $rowsAffected-----------------")
+
+    } catch {
+      case e: Throwable =>
+        // 3. Xử lý lỗi (tương đương với raise Exception)
+        // Lưu ý: Hàm exec() của bạn có thể đã bao gồm logic connect/close/commit/rollback
+        // Nếu không, cần đảm bảo DBIO Action được thực thi trong một transaction.
+        throw new RuntimeException(s"--------Fail to ALTER TABLE $tableName in Mysql: ${e.getMessage}-----------", e)
+    } finally {
+      // Đóng kết nối nếu hàm exec không tự làm
+      close()
+    }
+  }
 }
