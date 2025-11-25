@@ -6,3 +6,4 @@ target
 development.conf
 application.conf*
 tutorial_docker.txt
+src/main/resources/lib
