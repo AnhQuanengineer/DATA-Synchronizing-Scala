@@ -4,7 +4,7 @@ import Connector.Mysql.TableMapping.Users
 import slick.lifted.TableQuery
 import slick.jdbc.MySQLProfile.api._
 
-class UserRepositoryImpl extends UserRepository {
+class UserRepositoryMySQLImpl extends UserRepositoryMySQL {
 
   private val users = TableQuery[Users]
 

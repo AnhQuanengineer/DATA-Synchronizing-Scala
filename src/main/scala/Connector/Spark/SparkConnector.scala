@@ -17,12 +17,7 @@ class SparkConnector (
                      ) {
   private val logger: Logger = LogManager.getLogger(getClass)
   /*
-  Bạn định nghĩa lazy val x = { rất nặng }
-  → Chưa chạy gì cả, chỉ ghi nhớ công thức (giống GIF đang đứng yên).
-  Lần đầu tiên ai đó truy cập x
-  → Nó mới chịu chạy block code bên trong (GIF bắt đầu play).
-  Sau khi chạy xong, kết quả được cache mãi mãi
-  → Từ đó về sau truy cập lại thì trả về ngay kết quả đã có (GIF đã load xong, lần sau click là hiện luôn, không cần tải lại).
+  khi nào tạo object mà có truy cập biến thì nó mới tạo
    */
   private lazy val sparkSession: SparkSession = {
     logger.info(s"Starting SparkSession '$appName' on $masterUrl")
