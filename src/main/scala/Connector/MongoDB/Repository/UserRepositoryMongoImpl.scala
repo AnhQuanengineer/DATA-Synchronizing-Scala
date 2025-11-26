@@ -3,14 +3,15 @@ package Connector.MongoDB.Repository
 import Connector.MongoDB.DTO.User
 import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.model.Filters.equal
-import org.mongodb.scala.model.Updates
+import org.mongodb.scala.model.{Filters, Updates}
 import org.mongodb.scala.model.Updates.combine
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import org.mongodb.scala.result.InsertOneResult
+import org.mongodb.scala.result.{InsertOneResult, UpdateResult}
 
-class UserRepositoryImpl(users: MongoCollection[User]) extends UserRepository {
+class UserRepositoryMongoImpl(users: MongoCollection[User]) extends UserRepositoryMongo {
 
   override def insertOne(record: User): Future[InsertOneResult] = {
     users.insertOne(record)
@@ -18,14 +19,14 @@ class UserRepositoryImpl(users: MongoCollection[User]) extends UserRepository {
       .andThen {  // Log kết quả (không block)
         case Success(result) =>
           val insertedId = result.getInsertedId.asObjectId().getValue.toHexString  // Lấy _id tự sinh
-          println(s">>> Chèn thành công user_id = ${record.user_id} (login: ${record.login}), Mongo _id: $insertedId <<<")
+          println(s">>> Insert success user_id = ${record.user_id} (login: ${record.login}), Mongo _id: $insertedId <<<")
 
         case Failure(e) =>
           e match {
             case _: com.mongodb.MongoSecurityException =>
-              println(s"LỖI XÁC THỰC MONGO! ${e.getMessage} (kiểm tra user/pass + ?authSource=admin)")
+              println(s"Authentication fail MONGO! ${e.getMessage} (Check user/pass + ?authSource=admin)")
             case _ =>
-              println(s"LỖI INSERT user_id = ${record.user_id}: ${e.getMessage}")
+              println(s"Error in INSERT user_id = ${record.user_id}: ${e.getMessage}")
               e.printStackTrace()
           }
       }
@@ -33,7 +34,7 @@ class UserRepositoryImpl(users: MongoCollection[User]) extends UserRepository {
 
   override def insertMany(records: Seq[User]): Unit = {
     users.insertMany(records)
-    println("Đã thêm nhiều bản ghi.")
+    println("Insert success.")
     readAll()
   }
 
@@ -41,7 +42,7 @@ class UserRepositoryImpl(users: MongoCollection[User]) extends UserRepository {
     println("\nREAD")
     users.find().toFuture().onComplete {
       case Success(all) =>
-        println(s"Tổng cộng: ${all.length} người")
+        println(s"All: ${all.length}")
         all.foreach(u => println(s"Read all: ${u.login} - ${u.gravatar_id} - ${u.avatar_url} - ${u.url}"))
       case Failure(e) => println(e)
     }
@@ -60,8 +61,19 @@ class UserRepositoryImpl(users: MongoCollection[User]) extends UserRepository {
       equal("user_id", user_id),
       combine(Updates.set("login", "QUAN"))
     ).head().foreach { res =>
-      println(s"Cập nhật → modified: ${res.getModifiedCount}")
+      println(s"Update → modified: ${res.getModifiedCount}")
     }
+  }
+
+  override def cleanUpSparkTempField(): Future[UpdateResult] = {
+    users.updateMany(
+        Filters.exists("spark_temp"),
+        Updates.unset("spark_temp")
+      ).head()
+      .map { result =>
+        println(s"Cleaned spark_temp field from ${result.getModifiedCount} document(s)")
+        result
+      }
   }
 
 //  override def deleteOne(): Unit = {

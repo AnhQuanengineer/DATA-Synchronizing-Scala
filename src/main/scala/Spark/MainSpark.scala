@@ -95,8 +95,8 @@ object MainSpark extends App {
   val dbConf: DatabaseConfig = ConfigLoader.getDatabaseConfig
 
   private val writeMySQL: SparkWriteData = new SparkWriteData(sparkSession = sparkSession, config = dbConf)
-  writeMySQL.sparkWriteMysql(userDf, "users", SaveMode.Append)
-  writeMySQL.validateSparkMySQL(userDf, "users", SaveMode.Append)
+  writeMySQL.writeAllDatabase(userDf, "users", SaveMode.Append)
+  writeMySQL.validateAllDatabase(userDf, "users", SaveMode.Append)
 
   sparkSession.stop()
 }
