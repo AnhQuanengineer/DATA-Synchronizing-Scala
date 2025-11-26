@@ -1,6 +1,6 @@
 package Connector.MongoDB.Service
 
-import Connector.MongoDB.Repository.UserRepository
+import Connector.MongoDB.Repository.UserRepositoryMongo
 import Connector.MongoDB.DTO.User
 import org.mongodb.scala.result.InsertOneResult
 
@@ -9,7 +9,7 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
-class UserService(userRepository: UserRepository) {
+class UserService(userRepository: UserRepositoryMongo) {
 
   def createAndValidateMongoSchema(): Unit = {
     val teo = User(
@@ -33,13 +33,13 @@ class UserService(userRepository: UserRepository) {
       case Success(maybeUser) =>
         maybeUser match {
           case Some(user) =>
-            println(s"Validate thành công! User: ${user.login}, id = ${user.user_id}")
+            println(s"Validate success! User: ${user.login}, id = ${user.user_id}")
           case None =>
-            println("Validate ko thành công – không tìm thấy user vừa insert")
+            println("Validate not right – Not found user and insert")
         }
 
       case Failure(e) =>
-        println(s"Lỗi truy vấn: ${e.getMessage}")
+        println(s"Query error: ${e.getMessage}")
         e.printStackTrace()
     }
 

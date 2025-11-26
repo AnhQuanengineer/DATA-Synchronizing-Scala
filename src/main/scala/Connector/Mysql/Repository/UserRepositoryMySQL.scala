@@ -2,7 +2,7 @@ package Connector.Mysql.Repository
 import Connector.Mysql.DTO.User
 import slick.jdbc.MySQLProfile.api._
 
-trait UserRepository {
+trait UserRepositoryMySQL {
   def createTable: DBIO[Unit]
   def insert(user: User): DBIO[Int]
   def insertBatch(newUsers: Seq[User]): DBIO[Option[Int]]
