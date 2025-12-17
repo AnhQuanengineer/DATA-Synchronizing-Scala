@@ -1,7 +1,15 @@
-package config.transfer;
+package config;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
+import config.database.MySQLConfig;
+import config.transfer.KafkaConfig;
+import config.transfer.TransferConfig;
+import config.transfer.ValidateConfig;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigLoader {
     private static final ConfigLoader INSTANCE = new ConfigLoader();
@@ -34,7 +42,7 @@ public class ConfigLoader {
             System.out.println("ConfigException: " + e.getMessage());
             return null;
         }
-        return new KafkaConfig(bootstrapServers, groupId, topic);
+        return new KafkaConfig(bootstrapServers, topic, groupId);
     }
 
     private TransferConfig loadTransferConfig() {
@@ -44,14 +52,38 @@ public class ConfigLoader {
         return new TransferConfig(kafkaConfig);
     }
 
-    public static void main(String[] args) {
+    public Map<String, MySQLConfig> getDatabaseConfig() throws IllegalArgumentException, IOException {
+        Map<String, MySQLConfig> configs = new HashMap<>();
+
+        configs.put("mysql", MySQLConfig.builder()
+                .host(config.getString("Mysql.host"))
+                .port(config.getInt("Mysql.port"))
+                .user(config.getString("Mysql.user"))
+                .password(config.getString("Mysql.password"))
+                .database(config.getString("Mysql.database"))
+                .tableUsers("users")
+                .tableRepositories("repos")
+                .logTimestamps(config.getString("Mysql.log_last_timestamp"))
+                .build()
+        );
+
+        return configs;
+    }
+
+    public static void main(String[] args) throws IOException {
         ConfigLoader loader = ConfigLoader.getInstance();
 
         TransferConfig transferConfig = loader.getTransferConfig();
 
         KafkaConfig kafkaConfig = transferConfig.getKafkaConfig();
 
-        System.out.println(kafkaConfig.getBootstrapServers());
+        System.out.println(kafkaConfig.getTopic());
+
+        Map<String, MySQLConfig> dbConfig = loader.getDatabaseConfig();
+
+        MySQLConfig mysqlConfig = dbConfig.get("mysql");
+
+        System.out.println(mysqlConfig.getLogTimestamps());
 
     }
 }

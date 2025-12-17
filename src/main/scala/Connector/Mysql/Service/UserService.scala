@@ -1,12 +1,11 @@
 package Connector.Mysql.Service
 
-import Connector.Mysql.DTO.User
+import Connector.Mysql.DTO.{User, UserLogEntry}
 import slick.jdbc.MySQLProfile.api._
-import Connector.Mysql.MysqlConnector.{exec, close}
+import Connector.Mysql.MysqlConnector.{close, exec, run}
 import Connector.Mysql.Repository.UserRepositoryMySQL
 import slick.dbio.DBIO
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class UserService(userRepository: UserRepositoryMySQL) {
 

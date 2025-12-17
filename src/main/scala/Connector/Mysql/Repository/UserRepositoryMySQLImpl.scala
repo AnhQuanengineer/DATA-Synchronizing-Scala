@@ -1,8 +1,10 @@
 package Connector.Mysql.Repository
-import Connector.Mysql.DTO.User
+import Connector.Mysql.DTO.{User, UserLogEntry}
 import Connector.Mysql.TableMapping.Users
+import slick.jdbc.MySQLProfile
 import slick.lifted.TableQuery
 import slick.jdbc.MySQLProfile.api._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class UserRepositoryMySQLImpl extends UserRepositoryMySQL {
 
@@ -42,5 +44,63 @@ class UserRepositoryMySQLImpl extends UserRepositoryMySQL {
     val alterSql = sql"ALTER TABLE #$tableName DROP COLUMN #$columnName".asUpdate
     // .asUpdate được sử dụng cho các lệnh thay đổi dữ liệu/schema (INSERT, UPDATE, DELETE, ALTER).
     alterSql
+  }
+
+  override def getDataTrigger(lastTimestamp: String): DBIO[(Seq[UserLogEntry], String)] = {
+    val hasTimestamp = lastTimestamp.trim.nonEmpty
+    val query = if (hasTimestamp) {
+      sql"""
+       SELECT
+         user_id,
+         login,
+         gravatar_id,
+         avatar_url,
+         url,
+         state,
+         DATE_FORMAT(log_timestamp, '%Y-%m-%d %H:%i:%s.%f') AS formatted_ts
+       FROM user_log_after
+       WHERE log_timestamp > STR_TO_DATE($lastTimestamp, '%Y-%m-%d %H:%i:%s.%f')
+       ORDER BY log_timestamp ASC
+       """
+    } else {
+      sql"""
+       SELECT
+         user_id,
+         login,
+         gravatar_id,
+         avatar_url,
+         url,
+         state,
+         DATE_FORMAT(log_timestamp, '%Y-%m-%d %H:%i:%s.%f') AS formatted_ts
+       FROM user_log_after
+       ORDER BY log_timestamp ASC
+       """
+    }
+
+    // Thực thi và map kết quả
+    query
+      .as[(Long, String, Option[String], Option[String], Option[String], String, String)]
+      .map { rows =>
+        if (rows.isEmpty) {
+          (Seq.empty[UserLogEntry], lastTimestamp)
+        } else {
+          val entries = rows.map { case (user_id, login, gravatar_id, avatar_url, url, state, ts) =>
+            UserLogEntry(
+              user_id       = user_id,
+              login         = login,
+              gravatar_id   = gravatar_id,
+              avatar_url    = avatar_url,
+              url           = url,
+              state         = state,
+              log_timestamp = ts
+            )
+          }
+
+          val newMaxTimestamp = rows.last._7
+
+          (entries, newMaxTimestamp)
+        }
+      }
+      .withPinnedSession // quan trọng khi dùng trong transaction
   }
 }
