@@ -25,6 +25,7 @@ object ConfigLoader {
       , database = config.getString("Mysql.database")
       , url = config.getString("Mysql.url")
       , driver = config.getString("Mysql.driver")
+      , log_timestamp = config.getString("Mysql.log_last_timestamp")
     )
 
     mysqlConfig.validate()
@@ -58,7 +59,7 @@ object ConfigLoader {
 
   def main(args: Array[String]): Unit = {
     val dbConf = getDatabaseConfig
-    println(dbConf.mysql.driver)
+    println(dbConf.mysql.log_timestamp)
 //    val config = ConfigFactory.load()
 //    println(config.getString("Mysql.host"))
   }

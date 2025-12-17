@@ -1,5 +1,5 @@
 package Connector.Mysql.Repository
-import Connector.Mysql.DTO.User
+import Connector.Mysql.DTO.{User, UserLogEntry}
 import slick.jdbc.MySQLProfile.api._
 
 trait UserRepositoryMySQL {
@@ -12,4 +12,5 @@ trait UserRepositoryMySQL {
   def delete(user_id: Long): DBIO[Int]
   def addColumn(tableName: String, columnName: String, columnType: String): DBIO[Int]
   def dropColumn(tableName: String, columnName: String): DBIO[Int]
+  def getDataTrigger(lastTimestamp: String): DBIO[(Seq[UserLogEntry], String)]
 }

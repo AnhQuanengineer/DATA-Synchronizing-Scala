@@ -7,7 +7,8 @@ case class MysqlConfig(
                       password: String,
                       database: String,
                       url: String,
-                      driver: String
+                      driver: String,
+                      log_timestamp: String
                       ) extends ValidateConfig {
 
   def jdbcUrl: String = {
@@ -23,6 +24,7 @@ case class MysqlConfig(
       if (port == null) Some("port") else None,
       if (url == null || url.isEmpty) Some("url") else None,
       if (driver == null || driver.isEmpty) Some("driver") else None,
+      if (log_timestamp == null || log_timestamp.isEmpty) Some("log_timestamp") else None
     ).flatten
 
     if (requiredFields.nonEmpty) {
